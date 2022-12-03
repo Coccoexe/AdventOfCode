@@ -1,2 +1,2 @@
-# AdventOfCode2022
+# AdventOfCode
 My solutions for AOC
