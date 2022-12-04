@@ -1,8 +1,8 @@
 #Part-1 
 import os
-"Advent of Code 2022 - Day x"
-"TITLE"
-"--- Part 1 ---"
+print("Advent of Code 2022 - Day 9")
+print("TITLE")
+print("--- Part 1 ---")
 
 #Part-2 
-"--- Part 2 ---"
+print("--- Part 2 ---")
