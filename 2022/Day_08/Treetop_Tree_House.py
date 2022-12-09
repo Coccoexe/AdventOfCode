@@ -43,36 +43,131 @@ for i in range(len(lines)):
         else:
             matrix[i].append(int(lines[i][j]))
 
+#check if tree is visible
+#check every direction if there is a tree visible in that direction return true
+#otherwise check next direction
+#return false if tree is not visible in any direction
 def isVisible(i,j):
+
     #top
     for k in range(0,i):
-        if matrix[i][j] > matrix[k][j]:
-            return True
+        if matrix[i][j] <= matrix[k][j]:
+            break
+        if k == i-1:
+            return True  
+        
     #bottom
     for k in range(i+1,len(matrix)):
-        if matrix[i][j] > matrix[k][j]:
+        if matrix[i][j] <= matrix[k][j]:
+            break
+        if k == len(matrix)-1:
             return True
+    
     #left
     for k in range(0,j):
-        if matrix[i][j] > matrix[i][k]:
+        if matrix[i][j] <= matrix[i][k]:
+            break
+        if k == j-1:
             return True
+
     #right
     for k in range(j+1,len(matrix[i])):
-        if matrix[i][j] > matrix[i][k]:
+        if matrix[i][j] <= matrix[i][k]:
+            break
+        if k == len(matrix[i])-1:
             return True
+    
     return False
 
 #count visible trees
 visible = len(matrix[0]) * 2 + (len(matrix)-2) * 2
-visible = 0
+
 for i in range(1,len(matrix)-1):
     for j in range(1,len(matrix[i])-1):
         if isVisible(i,j):
             visible += 1
-        
-        
-        
+   
 print(visible)
+print("")
 
-#Part-2 
+# --- Part Two ---
+# Content with the amount of tree cover available, the Elves just need to know the best spot to build their tree house: they would like to be able to see a lot of trees.
+# 
+# To measure the viewing distance from a given tree, look up, down, left, and right from that tree; stop if you reach an edge or at the first tree that is the same height or taller than the tree under consideration. (If a tree is right on the edge, at least one of its viewing distances will be zero.)
+# 
+# The Elves don't care about distant trees taller than those found by the rules above; the proposed tree house has large eaves to keep it dry, so they wouldn't be able to see higher than the tree house anyway.
+# 
+# In the example above, consider the middle 5 in the second row:
+# 
+# 30373
+# 25512
+# 65332
+# 33549
+# 35390
+# Looking up, its view is not blocked; it can see 1 tree (of height 3).
+# Looking left, its view is blocked immediately; it can see only 1 tree (of height 5, right next to it).
+# Looking right, its view is not blocked; it can see 2 trees.
+# Looking down, its view is blocked eventually; it can see 2 trees (one of height 3, then the tree of height 5 that blocks its view).
+# A tree's scenic score is found by multiplying together its viewing distance in each of the four directions. For this tree, this is 4 (found by multiplying 1 * 1 * 2 * 2).
+# 
+# However, you can do even better: consider the tree of height 5 in the middle of the fourth row:
+# 
+# 30373
+# 25512
+# 65332
+# 33549
+# 35390
+# Looking up, its view is blocked at 2 trees (by another tree with a height of 5).
+# Looking left, its view is not blocked; it can see 2 trees.
+# Looking down, its view is also not blocked; it can see 1 tree.
+# Looking right, its view is blocked at 2 trees (by a massive tree of height 9).
+# This tree's scenic score is 8 (2 * 2 * 1 * 2); this is the ideal spot for the tree house.
+# 
+# Consider each tree on your map. What is the highest scenic score possible for any tree?
 print("--- Part 2 ---")
+
+def scenic_score(i,j):
+    score = 1
+    
+    #top
+    tree = 0
+    for k in range(1,i+1):
+        tree += 1
+        if matrix[i][j] <= matrix[i-k][j]:
+            break
+    score = score * tree if tree > 0 else score
+    
+    #bottom
+    tree = 0
+    for k in range(i+1,len(matrix)):
+        tree += 1
+        if matrix[i][j] <= matrix[k][j]:
+            break
+    score = score * tree if tree > 0 else score
+    
+    #left
+    tree = 0
+    for k in range(1,j+1):
+        tree += 1
+        if matrix[i][j] <= matrix[i][j-k]:
+            break
+    score = score * tree if tree > 0 else score
+    
+    #right
+    tree = 0
+    for k in range(j+1,len(matrix[i])):
+        tree += 1
+        if matrix[i][j] <= matrix[i][k]:
+            break
+    score = score * tree if tree > 0 else score
+    
+    return score
+
+max_score = 0
+for i in range(len(matrix)):
+    for j in range(len(matrix[i])):
+        score = scenic_score(i,j)
+        if score > max_score:
+            max_score = score
+        
+print(max_score)
