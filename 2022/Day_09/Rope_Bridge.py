@@ -247,15 +247,15 @@ print("--- Part 1 ---")
 file = open(os.path.dirname(__file__) + "/input.txt", "r")
 lines = [[line.split(" ")[0],int(line.split(" ")[1])] for line in file.read().splitlines()]
 
-def move_head(movement,position_H,offset):
+def move_head(movement,position_H):
     if movement == "R":
-        position_H[0] += offset
+        position_H[0] += 1
     elif movement == "L":
-        position_H[0] -= offset
+        position_H[0] -= 1
     elif movement == "U":
-        position_H[1] += offset
+        position_H[1] += 1
     elif movement == "D":
-        position_H[1] -= offset
+        position_H[1] -= 1
     
 def move_tail(position_H,position_T):
     
@@ -275,8 +275,8 @@ position_T = [0,0]
 
 movements = [[position_T[0],position_T[1]]]
 for line in lines:
-    move_head(line[0],position_H,line[1])
     for i in range(line[1]):
+        move_head(line[0],position_H)
         tmp = move_tail(position_H,position_T)
         if [tmp[0],tmp[1]] not in movements:
             movements.append([tmp[0],tmp[1]])
@@ -732,16 +732,14 @@ def print_positions(positions,prints=None):
 number_of_knots = 10
 positions = [[0,0] for i in range(number_of_knots)]
 movements = [[] for i in range(number_of_knots)]
-
+    
 for line in lines:
-    move_head(line[0],positions[0],line[1])
-    for i in range(1,number_of_knots):
-        for j in range(line[1]):
-            tmp = move_tail(positions[i-1],positions[i])
-            if [tmp[0],tmp[1]] not in movements[i]:
-                movements[i].append([tmp[0],tmp[1]])
-    #print_positions(positions)
-    #input()
+    for i in range(line[1]):
+        move_head(line[0],positions[0])
+        for j in range(1,number_of_knots):
+            tmp = move_tail(positions[j-1],positions[j])
+            if [tmp[0],tmp[1]] not in movements[j]:
+                movements[j].append([tmp[0],tmp[1]])
+
 
 print(len(movements[9]))
-print(positions)
