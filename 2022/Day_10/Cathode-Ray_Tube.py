@@ -356,16 +356,16 @@ cycle = 0
 i = 0
 display_width = 40
 
-def draw_pixel():
+def draw_pixel(black="."):
     
     comparison = cycle%40 if cycle%40 != 0 else 40
     
     if comparison in [registry, registry+1, registry+2]:
         return "#"
     else:
-        return "."
+        return black
 
-def processing_draw():
+def processing_draw(black="."):
     global registry
 
     d = ""
@@ -373,18 +373,18 @@ def processing_draw():
     if lines[i][0] == "addx":
         for j in range(2):
             cycling()
-            d += draw_pixel()
+            d += draw_pixel(black)
         registry += int(lines[i][1])
         
     elif lines[i][0] == "noop":
         cycling()
-        d += draw_pixel()
+        d += draw_pixel(black)
         
     return d
             
 draw = ""
 while i < len(lines):
-    draw += processing_draw()
+    draw += processing_draw(black=" ")
     i += 1
     
 for i in range(0,len(draw),display_width):
