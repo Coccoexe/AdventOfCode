@@ -107,7 +107,7 @@
 #
 # Determine which pairs of packets are already in the right order. What is the sum of the indices of those pairs?
 
-import os,re
+import os
 print("Advent of Code 2022 - Day 13")
 print("Distress Signal")
 print("--- Part 1 ---")
@@ -117,39 +117,109 @@ lines = file.read().splitlines()
 
 pairs = []
 for i in range(0, len(lines), 3):
-    pairs.append([lines[i], lines[i+1]])
+    pairs.append([lines[i], lines[i+1]]) 
 
-#def find_list(string):
-#    rl = re.search(r'^\[(\d*|[,])*\]{1}', string)
-#    split = rl.group(0) if rl else None
-#    if split != None:
-#        print(split)
-#    while split == None:
-#        string = string[1:]
-#        rl = re.search(r'^\[(\d*|[,])*\]{1}', string)
-#        split = rl.group(0) if rl else None
-#        if split != None:
-#            print(split)
+def compare_pair(left,right,verbose=False):
+    l,r = 0,0
+    while l < len(left) and r < len(right):
+        if verbose: print("Compare", left[l], "vs", right[r])
+        
+        if type(left[l]) == type(right[r]) and type(left[l]) == int:
+            if left[l] < right[r]:
+                if verbose: print("Left side is smaller, so inputs are in the right order")
+                return True
+            elif left[l] > right[r]:
+                if verbose: print("Right side is smaller, so inputs are not in the right order")
+                return False
+        else:
+            if type(left[l]) != type(right[r]):
+                if type(left[l]) != list:
+                    left[l] = [left[l]]
+                else:
+                    right[r] = [right[r]]
+                    
+            tmp = compare_pair(left[l], right[r])
+            if tmp != None:
+                return tmp
+        
+        l,r = l+1,r+1
+        
+    if l <= len(left) and r < len(right):
+        if verbose: print("Left side ran out of items, so inputs are in the right order")
+        return True
+    elif l < len(left) and r <= len(right):
+        if verbose: print("Right side ran out of items, so inputs are not in the right order")
+        return False 
 
-def find_list(string):
-    #rl = re.search(r'\[{1}(\d*|[,])*\]{1}',string[1:-1])
-    count_bracket = 0
-    index = None
-    for i in range(1,len(string)):
-        if string[i] == '[':
-            count_bracket += 1
-        if string[i] == ']':
-            count_bracket -= 1
-        if i != 1 and count_bracket == 0:
-            index = i
-            break
-    split = [string[1:i],string[i:-1]] if index != None else string
-    print(split)
-
+verbose = False
+c = 1
+sum = 0
 for p in pairs:
-    for s in p:
-        find_list(s)    
+    if verbose: print("== Pair " + str(c) + " ==")
+    if verbose: print("Compare", p[0], "vs", p[1])
+    if compare_pair(eval(p[0]), eval(p[1]),verbose):
+        sum += c
+    c += 1
+print(sum)
+print("")
+          
+# --- Part Two ---
+# Now, you just need to put all of the packets in the right order. Disregard the blank lines in your list of received packets.
+# 
+# The distress signal protocol also requires that you include two additional divider packets:
+# 
+# [[2]]
+# [[6]]
+# Using the same rules as before, organize all packets - the ones in your list of received packets as well as the two divider packets - into the correct order.
+# 
+# For the example above, the result of putting the packets in the correct order is:
+# 
+# []
+# [[]]
+# [[[]]]
+# [1,1,3,1,1]
+# [1,1,5,1,1]
+# [[1],[2,3,4]]
+# [1,[2,[3,[4,[5,6,0]]]],8,9]
+# [1,[2,[3,[4,[5,6,7]]]],8,9]
+# [[1],4]
+# [[2]]
+# [3]
+# [[4,4],4,4]
+# [[4,4],4,4,4]
+# [[6]]
+# [7,7,7]
+# [7,7,7,7]
+# [[8,7,6]]
+# [9]
+# Afterward, locate the divider packets. To find the decoder key for this distress signal, you need to determine the indices of the two divider packets and multiply them together. (The first packet is at index 1, the second packet is at index 2, and so on.) In this example, the divider packets are 10th and 14th, and so the decoder key is 140.
+# 
+# Organize all of the packets into the correct order. What is the decoder key for the distress signal? 
 
-
-#Part-2 
 print("--- Part 2 ---")
+
+from functools import cmp_to_key
+
+to_append = [
+    '[[2]]',
+    '[[6]]'
+]
+to_append = [eval(item) for item in to_append]
+
+packets = [item for item in to_append]
+for p in pairs:
+    packets.append(eval(p[0]))
+    packets.append(eval(p[1]))
+    
+def compare(packet1,packet2):
+    tmp = compare_pair(packet1,packet2)
+    if tmp == True:
+        return -1
+    elif tmp == False:
+        return 1
+    else:
+        return 0
+
+sorted_packets = sorted(packets,key=cmp_to_key(compare))
+to_append_index = [i for i in range(len(sorted_packets)) if sorted_packets[i] in to_append]
+print((to_append_index[0]+1) * (to_append_index[1]+1))
