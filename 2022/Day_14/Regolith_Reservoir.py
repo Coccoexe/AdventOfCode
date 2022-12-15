@@ -121,13 +121,14 @@ print("--- Part 1 ---")
 
 #constants
 height = 300
-width = 600
+width = 1000 # must be at least double the height from the source
 source = [500,0]
 
 #functions
 def print_map(matrix,display=True):
+    global height
     count = '000'
-    rows = ['  ' for i in range(3)]
+    rows = [' '*len(str(height)) for i in range(3)]
     for x in range(len(matrix[0])):
         rows[0] += count[0]
         rows[1] += count[1]
@@ -136,7 +137,8 @@ def print_map(matrix,display=True):
         while len(count) < 3: count = "0" + count
     
     for y in range(len(matrix)):
-        row = str(y)
+        i = 3 - len(str(y))
+        row = ' '*i + str(y)
         for x in range(len(matrix[y])):
             row += matrix[y][x]
         rows.append(row)
@@ -148,7 +150,7 @@ def print_map(matrix,display=True):
         return rows
 
 def pour_sand(matrix,source,depth,width):
-    walls = ['~','#','o']
+    walls = ['~','#','o'] 
     current = [source[0],source[1]]
 
     while current[0] < width and current[1] < depth and current[0] >= 0 and current[1] >= 0:
@@ -171,7 +173,28 @@ def pour_sand(matrix,source,depth,width):
             matrix[current[1]][current[0]] = 'o'
             return True
     return False
-        
+
+#pour from source
+def pour_sand_from_source(matrix,source):
+    walls = ['#','o'] 
+    current = [source[0],source[1]]
+
+    if matrix[current[1]][current[0]] == 'o':
+        return False
+    
+    while True:
+        if matrix[current[1]+1][current[0]] not in walls:
+            current[1] += 1
+        elif matrix[current[1]+1][current[0]-1] not in walls:
+            current[0] -= 1
+            current[1] += 1
+        elif matrix[current[1]+1][current[0]+1] not in walls:
+            current[0] += 1
+            current[1] += 1
+        else:
+            matrix[current[1]][current[0]] = 'o'
+            return True
+    
 #read file
 file = open(os.path.dirname(__file__) + "/input.txt", "r")
 lines = [line.split(" -> ") for line in file.read().splitlines()]
@@ -228,7 +251,7 @@ print("")
 
     
 #write file to output.txt                
-out = open(os.path.dirname(__file__) + "/output.txt", "w")
+out = open(os.path.dirname(__file__) + "/output_1.txt", "w")
 map = print_map(matrix,False)
 for row in map:
     out.write(row + "\n")
@@ -269,3 +292,32 @@ for row in map:
 # Using your scan, simulate the falling sand until the source of the sand becomes blocked. How many units of sand come to rest?
 
 print("--- Part 2 ---")
+
+#add floor
+for i in range(len(matrix[0])):
+    matrix[last_wall+2][i] = '#'
+
+#pour sand
+while True:
+    if pour_sand(matrix,source,last_wall+2,right_wall):
+        poured += 1
+    else:
+        break
+
+
+
+while True:
+    if pour_sand_from_source(matrix,source):
+        poured += 1
+    else:
+        break   
+    
+print(poured)
+
+    
+#write file to output.txt                
+out = open(os.path.dirname(__file__) + "/output_2.txt", "w")
+map = print_map(matrix,False)
+for row in map:
+    out.write(row + "\n")
+
