@@ -33,7 +33,7 @@ def deat_zone_range(sensor,beacon,line):
         to_remove = b_x
     if s_y == line:
         to_remove = s_x
-    death_zone = [s_x - (distance - abs(line-s_y)),s_x + distance - abs(line-s_y)]
+    death_zone = [s_x - (distance - abs(line-s_y)), s_x + (distance - abs(line-s_y))]
 
     return death_zone, to_remove
 
@@ -52,6 +52,17 @@ def mergeIntervals(intervals):
             stack.append(i)
  
     return stack
+
+def merge(intervals):
+    intervals.sort()
+    merged = []
+    for interval in intervals:
+        if not merged or merged[-1][-1] + 1 < interval[0]:
+            merged.append(interval)
+        else:
+            merged[-1][-1] = max(merged[-1][-1], interval[-1])
+    
+    return merged
 
 file = open(os.path.dirname(__file__) + "\input.txt", "r")
 lines = file.readlines()
@@ -79,7 +90,7 @@ for i in range(len(s)):
 
 
 #merge intervals
-death_zone = mergeIntervals(death_zone)
+death_zone = merge(death_zone)
 
 #count death zones
 count = 0
@@ -103,12 +114,40 @@ print("")
 
 print("--- Part 2 ---")
 
-max_x, max_y = 20, 20
+min_coord, max_coord = 0, 4000000
 
-for i in range(max_y+1):
-    s,b = sensors_to_compute(i)
-    for i in range(len(b)):
-        if b[0] < [0,0] or b[0] > [max_x,max_y] or s[0] < [0,0] or s[0] > [max_x,max_y]:
-            b.remove(b[i])
-            s.remove(s[i])
+spot = []
+
+for i in range(min_coord,max_coord+1):
+    print(i)
+    s,b = sensors_to_compute(i)   
+
+    #compute death zone
+    death_zone = []
+    to_remove = []
+    for j in range(len(s)):
+        tmp = deat_zone_range(s[j],b[j],i)
+        interval = [min(tmp[0]),max(tmp[0])] if tmp != None else None
+        if interval not in death_zone and interval != None:
+            death_zone.append(interval)
+        if tmp[1] not in to_remove and tmp[1] != None:
+            to_remove.append(tmp[1])
+
+
+    #merge intervals
+    death_zone = merge(death_zone)
+
+    for interval in death_zone:
+        if interval[1] < min_coord or interval[0] > max_coord:
+            print("remove",interval)
+            death_zone.remove(interval)
+    
+    if len(death_zone) > 1:
+        for j in range(len(death_zone)-1):
+            for k in range(death_zone[j][1]+1,death_zone[j+1][0]):
+                spot.append([i,k])
+
+print(spot)
+
+
     
