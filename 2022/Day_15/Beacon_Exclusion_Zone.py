@@ -1,10 +1,9 @@
-#Part-1 
 import os,re
 print("Advent of Code 2022 - Day 15")
 print("Beacon Exclusion Zone")
 print("--- Part 1 ---")
 
-#functions
+# FUNCTIONS ----------------------
 
 def sensors_to_compute(line):
     global sensors, beacons
@@ -37,22 +36,6 @@ def deat_zone_range(sensor,beacon,line):
 
     return death_zone, to_remove
 
-def mergeIntervals(intervals):
-    # Sort the array on the basis of start values of intervals.
-    intervals.sort()
-    stack = []
-    # insert first interval into stack
-    stack.append(intervals[0])
-    for i in intervals[1:]:
-        # Check for overlapping interval,
-        # if interval overlap
-        if stack[-1][0] <= i[0] <= stack[-1][-1]:
-            stack[-1][-1] = max(stack[-1][-1], i[-1])
-        else:
-            stack.append(i)
- 
-    return stack
-
 def merge(intervals):
     intervals.sort()
     merged = []
@@ -63,6 +46,12 @@ def merge(intervals):
             merged[-1][-1] = max(merged[-1][-1], interval[-1])
     
     return merged
+
+# CONSTANT -----------------------
+
+line_index = 2000000
+
+# --------------------------------
 
 file = open(os.path.dirname(__file__) + "\input.txt", "r")
 lines = file.readlines()
@@ -75,7 +64,6 @@ for line in lines:
     beacons.append([int(regex[2]),int(regex[3])])
 
 #find sensors to compute
-line_index = 10
 s,b = sensors_to_compute(line_index)   
 
 #compute death zone
@@ -88,7 +76,6 @@ for i in range(len(s)):
     if tmp[1] not in to_remove and tmp[1] != None:
         to_remove.append(tmp[1])
 
-
 #merge intervals
 death_zone = merge(death_zone)
 
@@ -100,26 +87,21 @@ for interval in death_zone:
         if item >= interval[0] and item <= interval[1]:
             count -= 1
             to_remove.remove(item)
-print(count)
-print("")
-
-# --- Part Two ---
-# Your handheld device indicates that the distress signal is coming from a beacon nearby. The distress beacon is not detected by any sensor, but the distress beacon must have x and y coordinates each no lower than 0 and no larger than 4000000.
-# 
-# To isolate the distress beacon's signal, you need to determine its tuning frequency, which can be found by multiplying its x coordinate by 4000000 and then adding its y coordinate.
-# 
-# In the example above, the search space is smaller: instead, the x and y coordinates can each be at most 20. With this reduced search area, there is only a single position that could have a beacon: x=14, y=11. The tuning frequency for this distress beacon is 56000011.
-# 
-# Find the only possible position for the distress beacon. What is its tuning frequency?
+print("Number of positions where a beacon cannot be present:",count)
+print()
 
 print("--- Part 2 ---")
 
+# CONSTANTS ----------------------
+
 min_coord, max_coord = 0, 4000000
 
-spot = []
+# --------------------------------
 
-for i in range(min_coord,max_coord+1):
-    print(i)
+# i know that beacon is over middle so i start from end
+# just to save time
+for i in range(3200000,min_coord-1,-1):
+    print(i) if i % 100000 == 0 else None
     s,b = sensors_to_compute(i)   
 
     #compute death zone
@@ -145,9 +127,9 @@ for i in range(min_coord,max_coord+1):
     if len(death_zone) > 1:
         for j in range(len(death_zone)-1):
             for k in range(death_zone[j][1]+1,death_zone[j+1][0]):
-                spot.append([i,k])
+                beacon_x, beacon_y = k, i
+        break
 
-print(spot)
-
-
+frequency = beacon_x * 4000000 + beacon_y
+print("Tuning frequency:",frequency)
     

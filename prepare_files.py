@@ -8,6 +8,8 @@ for i in range(15,16):
         os.makedirs(path)
         file = open(path + "/input.txt", "w")
         file.close()
+        file = open(path + "/instructions.txt", "w")
+        file.close
         file = open(path+"/RENAME_ME.py", "w")
         file.write("#Part-1 \n")
         file.write("import os\n")
@@ -18,3 +20,4 @@ for i in range(15,16):
         file.write("#Part-2 \n")
         file.write("print(\"--- Part 2 ---\")\n")
         file.close
+        
