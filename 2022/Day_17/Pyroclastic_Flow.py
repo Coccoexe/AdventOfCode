@@ -1,5 +1,14 @@
 #Part-1 
-import os, re
+import os, sys
+
+# DEBUG --------------------------------------------------
+
+DEBUG = True
+if DEBUG:
+    sys.tracebacklimit = 0
+
+# --------------------------------------------------------
+
 print("Advent of Code 2022 - Day 17")
 print("Pyroclastic Flow")
 print("--- Part 1 ---")
@@ -133,7 +142,7 @@ def process_falling(rock):
 # CONSTANTS ----------------------------------------------
 
 width = 7
-to_fall = 2022
+to_fall = 2022 #use 100000 for part 2
 
 # --------------------------------------------------------
 
@@ -281,8 +290,11 @@ try:
             break
 
 except:
-    print("Be sure that first part calculate enough rocks to find the pattern")
-    print("If this error persist, try to increase the number of rocks to fall in the first part")
+    print("+-----------------------------------------ERROR----------------------------------------+")
+    print("| Be sure that first part calculate enough rocks to allow a pattern to exist           |")
+    print("| If this error persist, try to increase the number of rocks to fall in the first part |")
+    print("+--------------------------------------------------------------------------------------+")
+    
 
 # calculate useful values
 pattern_heigth = heigths[rocks_fallen]-heigths[rocks_before_pattern]
