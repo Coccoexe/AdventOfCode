@@ -18,10 +18,52 @@ def compute_cost(region: set) -> int:
         _a += 1
     return _p * _a
 
+def eval_edges(x, y, region) -> int:
+    left = (y,x-1) in region if x-1 > -1 else False
+    right = (y,x+1) in region if x+1 < len(data[y]) else False
+    up = (y-1,x) in region if y-1 > -1 else False
+    down = (y+1,x) in region if y+1 < len(data) else False
+    match(left+right+up+down):
+        case 0: 
+            return 4
+        case 1: 
+            return 2
+        case 2:
+            if (left and right) or (up and down): return 0
+            if left and up and (y-1,x-1) in region: return 1
+            if left and down and (y+1,x-1) in region: return 1
+            if right and up and (y-1,x+1) in region: return 1
+            if right and down and (y+1,x+1) in region: return 1
+            return 2
+        case 3:
+            edges = 2
+            if not left:
+                if (y-1,x+1) in region: edges -= 1
+                if (y+1,x+1) in region: edges -= 1
+            if not right:
+                if (y-1,x-1) in region: edges -= 1
+                if (y+1,x-1) in region: edges -= 1
+            if not up:
+                if (y+1,x-1) in region: edges -= 1
+                if (y+1,x+1) in region: edges -= 1
+            if not down:
+                if (y-1,x-1) in region: edges -= 1
+                if (y-1,x+1) in region: edges -= 1
+        case 4:
+            edges = 4
+            if (y-1,x-1) in region: edges -= 1
+            if (y-1,x+1) in region: edges -= 1
+            if (y+1,x-1) in region: edges -= 1
+            if (y+1,x+1) in region: edges -= 1
+    return edges
+
 def compute_cost_discounted(region: set) -> int:
+    edges = 0
+    for y, x in region:
+        ev = eval_edges(x, y, region)
+        edges += ev
 
-
-    return 0
+    return edges * len(region)
 
 
 
