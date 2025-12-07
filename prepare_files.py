@@ -1,8 +1,8 @@
 import os
 
-year = 2024
+year = 2025
 
-for i in range(1,25):
+for i in range(7,13):
     path = os.path.dirname(__file__) + "/{}/Day_".format(year) + str(i) if i >= 10 else os.path.dirname(__file__) + "/{}/Day_0".format(year) + str(i)
     if not os.path.exists(path):
         os.makedirs(path)
