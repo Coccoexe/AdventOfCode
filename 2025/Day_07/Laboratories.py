@@ -4,7 +4,7 @@ print("Advent of Code 2025 - Day 7")
 print("Laboratories")
 print("--- Part 1 ---")
 
-data =  open(os.path.join(os.path.dirname(__file__), 'input.txt'), 'r').readlines()
+data = open(os.path.join(os.path.dirname(__file__), 'input.txt'), 'r').readlines()
 sources = set([data[0].find('S')])
 
 split = 0
